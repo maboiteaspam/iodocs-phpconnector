@@ -1,0 +1,19 @@
+{
+  "paths":{
+    "domains":"tests/output/domains/",
+    "examples":"tests/output/examples/",
+    "params":"tests/output/params/",
+    "models":"tests/output/models/"
+  },
+  "generator":{
+    "tgt_paths":{
+      "domains":"tests/output/domains/",
+      "examples":"tests/output/examples/",
+      "params":"tests/output/params/",
+      "models":"tests/output/models/"
+    },
+    "src_path":"tests/php-app/",
+    "app_bootstrap":"tests/iodocs-bootstrap.php",
+    "fake_var":{}
+  }
+}
