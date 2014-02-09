@@ -33,9 +33,14 @@ if( isset($config->generator->fake_var) ){
 $system_classes    = get_declared_classes();
 
 // load app bootstrap, app is responsible to initialize some variable and setup autoloader
+$use_bootstrap = false;
 if( isset($config->generator->app_bootstrap) ){
     if( $config->generator->app_bootstrap != "" &&
         file_exists($config->generator->app_bootstrap) )
+        $use_bootstrap = true;
+}
+
+if( $use_bootstrap ){
         include($config->generator->app_bootstrap);
 }else{
     $autoload = function($className) use($path) {
