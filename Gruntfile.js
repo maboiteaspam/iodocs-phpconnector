@@ -10,11 +10,11 @@ module.exports = function(grunt) {
     docco: {
       debug: {
         src: [
-          'shared/tests/test.php',
+          'shared/tests/test.js',
           'shared/cli.php',
           'shared/php/iodocs.php',
           'shared/php/iodocs-lib.php',
-          'shared/php/serpent_addedum.php',
+          'shared/php/serpent_addendum.php',
         ],
         options: {
           layout:'linear',

@@ -7,7 +7,9 @@ Php API connector for iodocs: reads annotations and produces webservices documen
 
 http://maboiteaspam.github.io/iodocs-phpconnector/
 
+http://maboiteaspam.github.io/iodocs-phpconnector/documentation/test.html
 http://maboiteaspam.github.io/iodocs-phpconnector/documentation/cli.html
+http://maboiteaspam.github.io/iodocs-phpconnector/documentation/serpent_addendum.html
 http://maboiteaspam.github.io/iodocs-phpconnector/documentation/iodocs.html
 http://maboiteaspam.github.io/iodocs-phpconnector/documentation/iodocs-lib.html
 
