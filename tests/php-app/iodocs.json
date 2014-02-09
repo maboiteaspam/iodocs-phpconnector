@@ -1,0 +1,14 @@
+{
+  "api_name":"php-app",
+  "api_config":{
+    "name": "Test v0.0 API",
+    "protocol": "http",
+    "baseURL": "somehost.com",
+    "publicPath": "/0.0",
+    "headers" : {}
+  },
+  "src_path":"tests/php-app/api/",
+  "app_bootstrap":"",
+  "fake_var":{},
+  "output_path":"tests/php-app/output"
+}

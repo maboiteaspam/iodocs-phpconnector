@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>iodocs-lib.php</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>iodocs-lib.php</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="cli.html">
+                    cli.php
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="iodocs-lib.html">
+                    iodocs-lib.php
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="iodocs.html">
+                    iodocs.php
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-preprocessor">&lt;?php</span>
+
+<span class="hljs-comment">/**
+ * Returns the endpoints that class belongs too
+ *
+ *<span class="hljs-phpdoc"> @param</span> $class_name
+ *<span class="hljs-phpdoc"> @return</span> array|bool
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_endpoint</span><span class="hljs-params">(<span class="hljs-variable">$class_name</span>)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">false</span>;
+    <span class="hljs-variable">$annotation</span> = get_annotation(<span class="hljs-variable">$class_name</span>)-&gt;getAnnotation(<span class="hljs-string">'Domain'</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$annotation</span> != <span class="hljs-keyword">null</span> ){
+        <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-string">"title"</span>]) ){
+            <span class="hljs-variable">$retour</span> = <span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-string">"title"</span>];
+        }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-number">0</span>]) ){
+            <span class="hljs-variable">$retour</span> = <span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-number">0</span>];
+        }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-string">"name"</span>]) ){
+            <span class="hljs-variable">$retour</span> = <span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-string">"name"</span>];
+        }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-number">1</span>]) ){
+            <span class="hljs-variable">$retour</span> = <span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-number">1</span>];
+        }
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_all_endpoint_classes</span><span class="hljs-params">(<span class="hljs-variable">$user_classes</span>)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+
+    <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$user_classes</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$class_name</span> ){
+        <span class="hljs-variable">$end_point</span> = get_endpoint(<span class="hljs-variable">$class_name</span>);
+        <span class="hljs-keyword">if</span>( <span class="hljs-variable">$end_point</span> !== <span class="hljs-keyword">false</span> )
+            <span class="hljs-variable">$retour</span>[] = <span class="hljs-variable">$class_name</span>;
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_all_example_classes</span><span class="hljs-params">(<span class="hljs-variable">$user_classes</span>)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+
+    <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$user_classes</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$class_name</span> ){
+        <span class="hljs-variable">$end_point</span> = is_example_model(<span class="hljs-variable">$class_name</span>);
+        <span class="hljs-keyword">if</span>( <span class="hljs-variable">$end_point</span> !== <span class="hljs-keyword">false</span> )
+            <span class="hljs-variable">$retour</span>[] = <span class="hljs-variable">$class_name</span>;
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is_example_model</span><span class="hljs-params">(<span class="hljs-variable">$class_name</span>)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">false</span>;
+    <span class="hljs-variable">$annotations</span> = get_annotation(<span class="hljs-variable">$class_name</span>)-&gt;getAllAnnotations(<span class="hljs-string">'ExampleModel'</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$annotations</span> != <span class="hljs-keyword">false</span> ){
+        <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">true</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_class_method_routes</span><span class="hljs-params">(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+
+    <span class="hljs-variable">$annotations</span> = get_annotation(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>))-&gt;getAllAnnotations(<span class="hljs-string">'Route'</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$annotations</span> != <span class="hljs-keyword">false</span> ){
+        <span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$annotations</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$annotation</span> ){
+            <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-string">"route"</span>]) )
+                <span class="hljs-variable">$retour</span>[] = <span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-string">"route"</span>];
+
+            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( is_string(<span class="hljs-variable">$annotation</span>-&gt;value) )
+                <span class="hljs-variable">$retour</span>[] = <span class="hljs-variable">$annotation</span>-&gt;value;
+        }
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_class_method_http_verbs</span><span class="hljs-params">(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+
+    <span class="hljs-variable">$annotations</span> = get_annotation(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>))-&gt;getAllAnnotations(<span class="hljs-string">'Method'</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$annotations</span> != <span class="hljs-keyword">false</span> ){
+        <span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$annotations</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$annotation</span> ){
+            <span class="hljs-keyword">if</span>( is_array(<span class="hljs-variable">$annotation</span>-&gt;value) )
+                <span class="hljs-variable">$retour</span> = array_merge(<span class="hljs-variable">$retour</span>, <span class="hljs-variable">$annotation</span>-&gt;value);
+            <span class="hljs-keyword">else</span>
+                <span class="hljs-variable">$retour</span> = array_merge(<span class="hljs-variable">$retour</span>, explode(<span class="hljs-string">" "</span>,<span class="hljs-variable">$annotation</span>-&gt;value));
+        }
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_class_method_http_parameters</span><span class="hljs-params">(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+
+    <span class="hljs-variable">$annotations</span> = get_annotation(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>))-&gt;getAllAnnotations(<span class="hljs-string">'ParametersModel'</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$annotations</span> != <span class="hljs-keyword">false</span> ){
+        <span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$annotations</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$annotation</span> ){
+            <span class="hljs-keyword">if</span>( is_array(<span class="hljs-variable">$annotation</span>-&gt;value) ){
+                <span class="hljs-variable">$http_method</span> = <span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-string">"method"</span>];
+                <span class="hljs-variable">$ref_class</span> = <span class="hljs-variable">$annotation</span>-&gt;value[<span class="hljs-string">"ref"</span>];
+                <span class="hljs-variable">$retour</span>[ <span class="hljs-variable">$http_method</span> ] = <span class="hljs-variable">$ref_class</span>;
+            }<span class="hljs-keyword">else</span>{
+                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> \<span class="hljs-keyword">Exception</span>(<span class="hljs-string">"Parameters model must be an array"</span>);
+            }
+        }
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_class_method_url_parameters</span><span class="hljs-params">(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>)</span>{</span>
+
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+
+    <span class="hljs-variable">$annotations</span> = get_annotation(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>))-&gt;getAllAnnotations(<span class="hljs-string">'Parameter'</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$annotations</span> != <span class="hljs-keyword">false</span> ){
+        <span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$annotations</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$annotation</span> ){
+            <span class="hljs-keyword">if</span>( strpos(<span class="hljs-string">"URL"</span>,<span class="hljs-variable">$annotation</span>-&gt;sources) !== <span class="hljs-keyword">false</span> ){
+                <span class="hljs-variable">$prop</span> = <span class="hljs-keyword">array</span>(
+                    <span class="hljs-string">"Description"</span>=&gt;<span class="hljs-string">""</span>,
+                    <span class="hljs-string">"Name"</span>=&gt;<span class="hljs-string">""</span>,
+                    <span class="hljs-string">"Required"</span>=&gt;<span class="hljs-keyword">false</span>,
+                    <span class="hljs-string">"Default"</span>=&gt;<span class="hljs-keyword">null</span>,
+                    <span class="hljs-string">"Pattern"</span>=&gt;<span class="hljs-string">""</span>,
+                    <span class="hljs-string">"Type"</span>=&gt;<span class="hljs-keyword">false</span>,
+                    <span class="hljs-string">"Location"</span>=&gt;<span class="hljs-string">"URL"</span>,
+                );
+                <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$annotation</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$k</span>=&gt;<span class="hljs-variable">$v</span>){
+                    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$k</span> === <span class="hljs-string">"example"</span> ){
+                        <span class="hljs-variable">$prop</span>[<span class="hljs-string">"Default"</span>] = <span class="hljs-variable">$v</span>;
+                    }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$prop</span>[ucfirst(<span class="hljs-variable">$k</span>)]) ){
+                        <span class="hljs-variable">$v</span> = <span class="hljs-variable">$v</span>===<span class="hljs-string">"true"</span>?<span class="hljs-keyword">true</span>:<span class="hljs-variable">$v</span>;
+                        <span class="hljs-variable">$v</span> = <span class="hljs-variable">$v</span>===<span class="hljs-string">"false"</span>?<span class="hljs-keyword">false</span>:<span class="hljs-variable">$v</span>;
+                        <span class="hljs-variable">$prop</span>[ucfirst(<span class="hljs-variable">$k</span>)] = <span class="hljs-variable">$v</span>;
+                    }
+                }
+                <span class="hljs-keyword">if</span>( <span class="hljs-variable">$prop</span>[<span class="hljs-string">"Type"</span>] === <span class="hljs-keyword">false</span> ){
+                    <span class="hljs-variable">$prop</span>[<span class="hljs-string">"Type"</span>] = gettype(<span class="hljs-variable">$prop</span>[<span class="hljs-string">"Default"</span>]);
+                }
+                <span class="hljs-variable">$retour</span>[] = <span class="hljs-variable">$prop</span>;
+            }<span class="hljs-keyword">else</span>{
+                var_dump(<span class="hljs-variable">$annotation</span>);
+                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> \<span class="hljs-keyword">Exception</span>(<span class="hljs-string">"must be an array"</span>);
+            }
+        }
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">transform_parameters_class_to_array</span><span class="hljs-params">(<span class="hljs-variable">$verb</span>,<span class="hljs-variable">$class_name</span>)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+
+    <span class="hljs-variable">$properties</span> = get_property_list(<span class="hljs-variable">$class_name</span>);
+    <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$properties</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$property_name</span>=&gt;<span class="hljs-variable">$prop</span>){
+        <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$property_name</span>] = new_resolve_property(<span class="hljs-variable">$verb</span>,<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$property_name</span>,<span class="hljs-variable">$prop</span>[<span class="hljs-string">"default"</span>]);
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+
+<span class="hljs-comment">/**
+ * for data consistency
+ *
+ *<span class="hljs-phpdoc"> @param</span> $class_name
+ *<span class="hljs-phpdoc"> @param</span> $method_name
+ *<span class="hljs-phpdoc"> @return</span> array
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">new_parse_docblock_title_desc</span> <span class="hljs-params">(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>)</span>{</span>
+    <span class="hljs-variable">$texts</span> = parse_docblock_title_desc(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>));
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">array</span>(
+        <span class="hljs-string">"title"</span>=&gt; <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$texts</span>[<span class="hljs-string">"title"</span>])?<span class="hljs-variable">$texts</span>[<span class="hljs-string">"title"</span>]:<span class="hljs-string">""</span>,
+        <span class="hljs-string">"description"</span>=&gt;<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$texts</span>[<span class="hljs-string">"description"</span>])?<span class="hljs-variable">$texts</span>[<span class="hljs-string">"description"</span>]:<span class="hljs-string">""</span>,
+    );
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">new_resolve_property</span><span class="hljs-params">(<span class="hljs-variable">$verb</span>,<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$property_name</span>,<span class="hljs-variable">$default_value</span>=null)</span>{</span>
+
+    <span class="hljs-variable">$type</span> = parse_docblock_annot(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$property_name</span>), <span class="hljs-string">"var"</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$type</span> === <span class="hljs-keyword">false</span> &amp;&amp; <span class="hljs-variable">$default_value</span> !== <span class="hljs-keyword">null</span> ){
+        <span class="hljs-variable">$type</span> = gettype(<span class="hljs-variable">$default_value</span>);
+    }
+
+    <span class="hljs-variable">$docblock_text</span> = new_parse_docblock_title_desc(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$property_name</span>);
+
+    <span class="hljs-variable">$prop</span> = <span class="hljs-keyword">array</span>(
+        <span class="hljs-string">"Description"</span>=&gt;<span class="hljs-variable">$docblock_text</span>[<span class="hljs-string">"title"</span>],
+        <span class="hljs-string">"Name"</span>=&gt;<span class="hljs-variable">$property_name</span>,
+        <span class="hljs-string">"Required"</span>=&gt;<span class="hljs-keyword">false</span>,
+        <span class="hljs-string">"Default"</span>=&gt;<span class="hljs-variable">$default_value</span>,
+        <span class="hljs-string">"Pattern"</span>=&gt;<span class="hljs-string">""</span>,
+        <span class="hljs-string">"Type"</span>=&gt;<span class="hljs-variable">$type</span>,
+        <span class="hljs-string">"Location"</span>=&gt;<span class="hljs-variable">$verb</span>,
+    );
+
+    <span class="hljs-variable">$annotation</span> = get_annotation( <span class="hljs-keyword">array</span>(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$property_name</span>) )-&gt;getAnnotation(<span class="hljs-string">'Property'</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$annotation</span> != <span class="hljs-keyword">false</span> ){
+        <span class="hljs-keyword">if</span>(is_array(<span class="hljs-variable">$annotation</span>-&gt;value) ){
+            <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$annotation</span>-&gt;value <span class="hljs-keyword">as</span> <span class="hljs-variable">$k</span>=&gt;<span class="hljs-variable">$v</span>){
+                <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$prop</span>[ucfirst(<span class="hljs-variable">$k</span>)]) ){
+                    <span class="hljs-variable">$v</span> = <span class="hljs-variable">$v</span>===<span class="hljs-string">"true"</span>?<span class="hljs-keyword">true</span>:<span class="hljs-variable">$v</span>;
+                    <span class="hljs-variable">$v</span> = <span class="hljs-variable">$v</span>===<span class="hljs-string">"false"</span>?<span class="hljs-keyword">false</span>:<span class="hljs-variable">$v</span>;
+                    <span class="hljs-variable">$prop</span>[ucfirst(<span class="hljs-variable">$k</span>)] = <span class="hljs-variable">$v</span>;
+                }
+            }
+        }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(<span class="hljs-variable">$annotation</span>-&gt;value !== <span class="hljs-keyword">NULL</span> ){
+            var_dump(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$property_name</span>);
+            var_dump(<span class="hljs-variable">$annotation</span>-&gt;value);
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> \<span class="hljs-keyword">Exception</span>(<span class="hljs-string">"must be an array"</span>);
+        }
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$prop</span>;
+}</pre></div>
+        
+      
+        
+        <h2 id="backported-helpers">backported helpers</h2>
+
+        
+      
+        
+        
+        
+      
+        
+        <h2 id="fs-helpers">fs helpers</h2>
+
+        
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">scanRecursive</span><span class="hljs-params">(<span class="hljs-variable">$path</span>, <span class="hljs-variable">$baseDir</span>=<span class="hljs-string">""</span>)</span> {</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+    <span class="hljs-variable">$baseDir</span>=<span class="hljs-variable">$baseDir</span>==<span class="hljs-string">""</span>?<span class="hljs-variable">$path</span>:<span class="hljs-variable">$baseDir</span>;
+    <span class="hljs-variable">$dh</span> = opendir(<span class="hljs-variable">$path</span>);
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$dh</span> == <span class="hljs-keyword">false</span> ){
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> \<span class="hljs-keyword">Exception</span>(<span class="hljs-string">"$path does not exists"</span>);
+    }
+    <span class="hljs-keyword">while</span> ((<span class="hljs-variable">$file</span> = readdir(<span class="hljs-variable">$dh</span>)) !== <span class="hljs-keyword">false</span>) {
+        <span class="hljs-keyword">if</span> (substr(<span class="hljs-variable">$file</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>) == <span class="hljs-string">'.'</span>) <span class="hljs-keyword">continue</span>;
+        <span class="hljs-variable">$rfile</span> = <span class="hljs-string">"{$path}/{$file}"</span>;
+        <span class="hljs-keyword">if</span> (is_dir(<span class="hljs-variable">$rfile</span>)) {
+            <span class="hljs-variable">$retour</span> = array_merge(<span class="hljs-variable">$retour</span>, scanRecursive(<span class="hljs-variable">$rfile</span>, <span class="hljs-variable">$baseDir</span>));
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-variable">$retour</span>[substr(<span class="hljs-variable">$rfile</span>,strlen(<span class="hljs-variable">$baseDir</span>))] = <span class="hljs-variable">$file</span>;
+        }
+    }
+    closedir(<span class="hljs-variable">$dh</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">delTree</span><span class="hljs-params">(<span class="hljs-variable">$dir</span>)</span> {</span>
+    <span class="hljs-keyword">if</span>( is_dir(<span class="hljs-variable">$dir</span>) == <span class="hljs-keyword">false</span> ) <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+    <span class="hljs-variable">$files</span> = array_diff(scandir(<span class="hljs-variable">$dir</span>), <span class="hljs-keyword">array</span>(<span class="hljs-string">'.'</span>,<span class="hljs-string">'..'</span>));
+    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$files</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$file</span>) {
+        (is_dir(<span class="hljs-string">"$dir/$file"</span>)) ? delTree(<span class="hljs-string">"$dir/$file"</span>) : unlink(<span class="hljs-string">"$dir/$file"</span>);
+    }
+    <span class="hljs-keyword">return</span> rmdir(<span class="hljs-variable">$dir</span>);
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">clean_path</span><span class="hljs-params">(<span class="hljs-variable">$path</span>)</span>{</span>
+    <span class="hljs-variable">$path</span> = str_replace(<span class="hljs-string">"\\"</span>,<span class="hljs-string">"/"</span>,<span class="hljs-variable">$path</span>);
+    <span class="hljs-variable">$path</span> = str_replace(<span class="hljs-string">"\\"</span>,<span class="hljs-string">"/"</span>,<span class="hljs-variable">$path</span>);
+    <span class="hljs-variable">$path</span> = str_replace(<span class="hljs-string">"\\"</span>,<span class="hljs-string">"/"</span>,<span class="hljs-variable">$path</span>);
+    <span class="hljs-variable">$path</span> = str_replace(<span class="hljs-string">"//"</span>,<span class="hljs-string">"/"</span>,<span class="hljs-variable">$path</span>);
+    <span class="hljs-variable">$path</span> = str_replace(<span class="hljs-string">"//"</span>,<span class="hljs-string">"/"</span>,<span class="hljs-variable">$path</span>);
+    <span class="hljs-variable">$path</span> = str_replace(<span class="hljs-string">"//"</span>,<span class="hljs-string">"/"</span>,<span class="hljs-variable">$path</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$path</span>;
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">clean_dirname</span><span class="hljs-params">(<span class="hljs-variable">$path</span>)</span>{</span>
+    <span class="hljs-variable">$path</span> = dirname(<span class="hljs-variable">$path</span>);
+    <span class="hljs-variable">$path</span> = <span class="hljs-variable">$path</span> == <span class="hljs-string">"."</span>?<span class="hljs-string">""</span>:<span class="hljs-variable">$path</span>;
+    <span class="hljs-variable">$path</span> =<span class="hljs-variable">$path</span> == <span class="hljs-string">"/"</span>?<span class="hljs-string">""</span>:<span class="hljs-variable">$path</span>;
+    <span class="hljs-variable">$path</span> =<span class="hljs-variable">$path</span> == <span class="hljs-string">"\\"</span>?<span class="hljs-string">""</span>:<span class="hljs-variable">$path</span>;
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$path</span>;
+}</pre></div>
+        
+      
+        
+        <h2 id="reflection-helpers">reflection helpers</h2>
+
+        
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_reflection</span><span class="hljs-params">(<span class="hljs-variable">$item</span>)</span>{</span>
+    <span class="hljs-variable">$reflection</span> = <span class="hljs-variable">$item</span>;
+    <span class="hljs-keyword">if</span>( is_string(<span class="hljs-variable">$item</span>) &amp;&amp; function_exists(<span class="hljs-variable">$item</span>) ){
+        <span class="hljs-variable">$reflection</span> = <span class="hljs-keyword">new</span> ReflectionFunction(<span class="hljs-variable">$item</span>);
+    }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( is_string(<span class="hljs-variable">$item</span>) &amp;&amp; class_exists(<span class="hljs-variable">$item</span>)){
+        <span class="hljs-variable">$reflection</span> = <span class="hljs-keyword">new</span> ReflectionClass(<span class="hljs-variable">$item</span>);
+    }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( is_array(<span class="hljs-variable">$item</span>) &amp;&amp; method_exists(<span class="hljs-variable">$item</span>[<span class="hljs-number">0</span>],<span class="hljs-variable">$item</span>[<span class="hljs-number">1</span>])){
+        <span class="hljs-variable">$reflection</span> = <span class="hljs-keyword">new</span> ReflectionMethod(<span class="hljs-variable">$item</span>[<span class="hljs-number">0</span>],<span class="hljs-variable">$item</span>[<span class="hljs-number">1</span>]);
+    }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( is_array(<span class="hljs-variable">$item</span>) &amp;&amp; property_exists(<span class="hljs-variable">$item</span>[<span class="hljs-number">0</span>],<span class="hljs-variable">$item</span>[<span class="hljs-number">1</span>])){
+        <span class="hljs-variable">$reflection</span> = <span class="hljs-keyword">new</span> ReflectionProperty(<span class="hljs-variable">$item</span>[<span class="hljs-number">0</span>],<span class="hljs-variable">$item</span>[<span class="hljs-number">1</span>]);
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$reflection</span>;
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get_property_list</span><span class="hljs-params">(<span class="hljs-variable">$class</span>, <span class="hljs-variable">$visibility</span>=null)</span>{</span>
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+    <span class="hljs-variable">$visibility</span>=<span class="hljs-variable">$visibility</span>===<span class="hljs-keyword">NULL</span>?ReflectionProperty::IS_PUBLIC:<span class="hljs-variable">$visibility</span>;
+    <span class="hljs-variable">$ref</span> = <span class="hljs-keyword">new</span> ReflectionClass(<span class="hljs-variable">$class</span>);
+    <span class="hljs-variable">$default</span> = <span class="hljs-variable">$ref</span>-&gt;getDefaultProperties();
+    <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$ref</span>-&gt;getProperties(<span class="hljs-variable">$visibility</span>) <span class="hljs-keyword">as</span> <span class="hljs-variable">$property</span> ){
+        <span class="hljs-variable">$name</span> = <span class="hljs-variable">$property</span>-&gt;getName();
+        <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$name</span>] = <span class="hljs-keyword">array</span>(<span class="hljs-string">'default'</span>=&gt;<span class="hljs-variable">$default</span>[<span class="hljs-variable">$name</span>]);
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}</pre></div>
+        
+      
+        
+        <h2 id="annotation-helpers">annotation helpers</h2>
+
+        
+      
+        
+        
+        
+          <div class='highlight'><pre>function get_annotation($item){
+    $reflection = false;
+    if( is_string($item) &amp;&amp; function_exists($item) ){
+        $reflection = new ReflectionAnnotatedFunction($item);
+    }else if( is_string($item) &amp;&amp; class_exists($item)){
+        $reflection = new ReflectionAnnotatedClass($item);
+    }else if( is_array($item) &amp;&amp; method_exists($item[0],$item[1])){
+        $reflection = new ReflectionAnnotatedMethod($item[0],$item[1]);
+    }else if( is_array($item) &amp;&amp; property_exists($item[0],$item[1])){
+        $reflection = new ReflectionAnnotatedProperty($item[0],$item[1]);
+    }else if( $item instanceof ReflectionMethod ){
+        $reflection = new ReflectionAnnotatedMethod($item-&gt;class,$item-&gt;name);
+    }else if( $item instanceof ReflectionClass ){
+        $reflection = new ReflectionAnnotatedClass($item-&gt;class);
+    }else{
+        var_dump($item);
+        throw new \Exception("xwc");
+    }
+    return $reflection;
+}
+function parse_docblock_annot ($item, $annot_name){
+    $retour = false;
+    $ref    = get_reflection($item);
+    $text   = $ref-&gt;getDocComment();
+    $text   = substr($text, 3, -2);
+    if( preg_match("/^\s*\*\s*@".$annot_name."\s+(.+)$/im",$text, $matches) &gt; 0 ){
+        $retour = trim($matches[1]);
+    }
+    return $retour;
+}
+function parse_docblock_text($item){
+    $retour = "";
+    $ref = get_reflection($item);
+    $retour = $ref-&gt;getDocComment();
+    $retour = substr($retour, 3, -2);
+    $retour = preg_replace("/^\s*\*\s*@.+$/m","",$retour);
+    $retour = preg_replace("/^\s*\*/m","",$retour);
+    return trim($retour);
+}
+function parse_text_title_desc ($text){
+    $retour = array();
+
+    $eol = strpos($text,"\n\n") &gt; -1 ? "\n" : "\r\n";
+
+    if( strpos($text,"$eol$eol") &gt; -1 ){
+        $retour["title"] = substr($text,0,strpos($text, "$eol$eol"));
+        $text = substr($text,strlen($retour["title"]));
+        $text = ltrim($text);
+        if( trim($text)!="" ){
+            $retour["description"] = trim($text);
+        }
+        if( isset($retour["description"]) ) $retour["description"] = trim($retour["description"]);
+        if( isset($retour["title"]) ) $retour["title"] = trim($retour["title"]);
+
+        if( $retour["description"] == "" ) unset($retour["description"]);
+        if( $retour["title"] == "" ) unset($retour["title"]);
+    }elseif( count(explode("$eol$eol", $text)) == 1 ){
+        $retour["title"] = trim($text);
+    }
+    return $retour;
+}
+function parse_docblock_title_desc ($item){
+    $text = parse_docblock_text ($item);
+    return parse_text_title_desc ($text);
+}</pre></div>
+        
+      
+        
+        <h2 id="transformers">transformers</h2>
+
+        
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">transform_properties_to_example</span><span class="hljs-params">(<span class="hljs-variable">$item</span>, <span class="hljs-variable">$stack</span>=array<span class="hljs-params">()</span>)</span>{</span>
+    <span class="hljs-variable">$stack</span>[] = <span class="hljs-variable">$item</span>;
+    <span class="hljs-variable">$retour</span> = <span class="hljs-keyword">array</span>();
+    <span class="hljs-variable">$ref</span> = <span class="hljs-keyword">new</span> ReflectionClass(<span class="hljs-variable">$item</span>);
+    <span class="hljs-variable">$default</span> = <span class="hljs-variable">$ref</span>-&gt;getDefaultProperties();
+    <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$ref</span>-&gt;getProperties(ReflectionProperty::IS_PUBLIC) <span class="hljs-keyword">as</span> <span class="hljs-variable">$property</span> ){
+
+        <span class="hljs-variable">$name</span> = <span class="hljs-variable">$property</span>-&gt;getName();
+        <span class="hljs-variable">$def_val</span> = <span class="hljs-variable">$default</span>[<span class="hljs-variable">$name</span>];
+
+        <span class="hljs-variable">$var_type</span> = parse_docblock_annot(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$item</span>,<span class="hljs-variable">$name</span>), <span class="hljs-string">"var"</span>);
+
+        <span class="hljs-keyword">if</span>( <span class="hljs-variable">$var_type</span> == <span class="hljs-string">"NULL"</span> ){
+            <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$name</span>] = <span class="hljs-keyword">NULL</span>;
+        }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( <span class="hljs-variable">$var_type</span> !== <span class="hljs-keyword">false</span> &amp;&amp; class_exists(<span class="hljs-variable">$var_type</span>) ){
+            <span class="hljs-keyword">if</span>( in_array(<span class="hljs-variable">$var_type</span>, <span class="hljs-variable">$stack</span>) ){
+                <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$name</span>] = <span class="hljs-string">"*recursion of $var_type*"</span>;
+            }<span class="hljs-keyword">else</span>{
+                <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$name</span>] = transform_properties_to_example(<span class="hljs-variable">$var_type</span>, <span class="hljs-variable">$stack</span>);
+            }
+        }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>( <span class="hljs-variable">$def_val</span> !== <span class="hljs-keyword">NULL</span> ){
+            <span class="hljs-keyword">if</span>( is_string( <span class="hljs-variable">$def_val</span> ) ) <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$name</span>] = htmlentities(<span class="hljs-variable">$def_val</span>);
+            <span class="hljs-keyword">else</span> <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$name</span>] = <span class="hljs-variable">$def_val</span>;
+        }<span class="hljs-keyword">elseif</span>(<span class="hljs-variable">$var_type</span> == <span class="hljs-string">"array"</span>){
+            <span class="hljs-variable">$values</span> = <span class="hljs-keyword">array</span>();
+            <span class="hljs-variable">$annotations</span> = get_annotation(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$item</span>,<span class="hljs-variable">$name</span>))-&gt;getAllAnnotations(<span class="hljs-string">"Example"</span>);
+            <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$annotations</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$annotation</span> ){
+                <span class="hljs-variable">$value</span> = <span class="hljs-variable">$annotation</span>-&gt;value;
+                <span class="hljs-keyword">if</span>( class_exists(<span class="hljs-variable">$annotation</span>-&gt;value) ){
+                    <span class="hljs-variable">$value</span> = transform_properties_to_example(<span class="hljs-variable">$annotation</span>-&gt;value, <span class="hljs-variable">$stack</span>);
+                }
+                <span class="hljs-variable">$values</span>[] = <span class="hljs-variable">$value</span>;
+            }
+            <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$name</span>] = <span class="hljs-variable">$values</span>;
+        }<span class="hljs-keyword">else</span>{
+            <span class="hljs-variable">$annotation</span> = get_annotation(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$item</span>,<span class="hljs-variable">$name</span>))-&gt;getAnnotation(<span class="hljs-string">"Example"</span>);
+            <span class="hljs-keyword">if</span>( <span class="hljs-variable">$annotation</span> != <span class="hljs-keyword">false</span> ){
+                <span class="hljs-variable">$value</span> = <span class="hljs-variable">$annotation</span>-&gt;value;
+                <span class="hljs-keyword">if</span>( class_exists(<span class="hljs-variable">$annotation</span>-&gt;value) ){
+                    <span class="hljs-variable">$value</span> = transform_properties_to_example(<span class="hljs-variable">$annotation</span>-&gt;value, <span class="hljs-variable">$stack</span>);
+                }
+                <span class="hljs-variable">$retour</span>[<span class="hljs-variable">$name</span>] = <span class="hljs-variable">$value</span>;
+            }
+        }
+    }
+    array_pop ( <span class="hljs-variable">$stack</span> );
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$retour</span>;
+}</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

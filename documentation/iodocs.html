@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>iodocs.php</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>iodocs.php</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="cli.html">
+                    cli.php
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="iodocs-lib.html">
+                    iodocs-lib.php
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="iodocs.html">
+                    iodocs.php
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-preprocessor">&lt;?php</span>
+
+
+<span class="hljs-variable">$output_path</span> = <span class="hljs-variable">$config</span>-&gt;output_path;
+<span class="hljs-variable">$current_cwd_dir</span> = getcwd();
+
+<span class="hljs-keyword">include</span>(<span class="hljs-keyword">__DIR__</span> . <span class="hljs-string">"/serpent_addendum.php"</span>);
+<span class="hljs-keyword">include</span>(<span class="hljs-keyword">__DIR__</span> . <span class="hljs-string">"/iodocs-lib.php"</span>);</pre></div>
+        
+      
+        
+        <p>gets the src path of your php app</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-variable">$src_path</span>       = <span class="hljs-variable">$config</span>-&gt;src_path;
+<span class="hljs-variable">$api_name</span>       = <span class="hljs-variable">$config</span>-&gt;api_name;
+<span class="hljs-variable">$api_config</span>     = <span class="hljs-variable">$config</span>-&gt;api_config;
+<span class="hljs-variable">$output_path</span>    = <span class="hljs-variable">$config</span>-&gt;output_path;
+<span class="hljs-variable">$examples_path</span>  = <span class="hljs-variable">$config</span>-&gt;output_path.<span class="hljs-string">"/examples/"</span>;</pre></div>
+        
+      
+        
+        <p>initiate fake variable</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$config</span>-&gt;fake_var) ){
+    <span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$config</span>-&gt;fake_var <span class="hljs-keyword">as</span> <span class="hljs-variable">$var</span>){
+        <span class="hljs-variable">$$var</span> = <span class="hljs-keyword">new</span> FakeVar();
+    }
+}
+
+<span class="hljs-variable">$system_classes</span>    = get_declared_classes();
+install_autoloading(<span class="hljs-variable">$config</span>, <span class="hljs-variable">$src_path</span>);
+wakeup_userclasses(<span class="hljs-variable">$src_path</span>);
+<span class="hljs-variable">$user_classes</span> = collect_userclasses(<span class="hljs-variable">$system_classes</span>);</pre></div>
+        
+      
+        
+        <p>some variables to store collected information about your project</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-variable">$endpoints</span>    = <span class="hljs-keyword">array</span>();
+
+<span class="hljs-variable">$ep_classes</span> = get_all_endpoint_classes(<span class="hljs-variable">$user_classes</span>);
+<span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$ep_classes</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$class_name</span> ){
+    <span class="hljs-variable">$endpoint</span> = <span class="hljs-keyword">array</span>(
+        <span class="hljs-string">"name"</span>=&gt; get_endpoint(<span class="hljs-variable">$class_name</span>),
+        <span class="hljs-string">"methods"</span>=&gt;<span class="hljs-keyword">array</span>(),
+    );
+    <span class="hljs-variable">$methods</span> = get_reflection(<span class="hljs-variable">$class_name</span>)-&gt;getMethods();
+
+    <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$methods</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$index</span>=&gt;<span class="hljs-variable">$method_meta</span> ){
+        <span class="hljs-variable">$method_name</span> = <span class="hljs-variable">$method_meta</span>-&gt;name;
+        <span class="hljs-variable">$method_routes</span> = get_class_method_routes(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>);
+        <span class="hljs-variable">$method_verbs</span> = get_class_method_http_verbs(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>);
+        <span class="hljs-variable">$method_parameters</span> = get_class_method_http_parameters(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>);
+        <span class="hljs-variable">$method_url_parameters</span> = get_class_method_url_parameters(<span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span>);
+        <span class="hljs-variable">$method_texts</span> = new_parse_docblock_title_desc( <span class="hljs-variable">$class_name</span>,<span class="hljs-variable">$method_name</span> );
+
+        <span class="hljs-keyword">if</span>( count(<span class="hljs-variable">$method_routes</span>)+count(<span class="hljs-variable">$method_routes</span>)==<span class="hljs-number">0</span>){</pre></div>
+        
+      
+        
+        <p>echo “OoOo”;</p>
+
+        
+          <div class='highlight'><pre>        }<span class="hljs-keyword">else</span>{</pre></div>
+        
+      
+        
+        <p>-</p>
+
+        
+          <div class='highlight'><pre>            <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$method_routes</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$route</span> ){
+                <span class="hljs-keyword">if</span>( count(<span class="hljs-variable">$method_verbs</span>) == <span class="hljs-number">0</span> ){
+                    <span class="hljs-variable">$method_verbs</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">"GET"</span>);
+                }
+                <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$method_verbs</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$verb</span> ){
+                    <span class="hljs-variable">$ep_method</span> = <span class="hljs-keyword">array</span>(
+                        <span class="hljs-string">"MethodName"</span>=&gt;<span class="hljs-variable">$method_texts</span>[<span class="hljs-string">"title"</span>],
+                        <span class="hljs-string">"Synopsis"</span>=&gt;<span class="hljs-variable">$method_texts</span>[<span class="hljs-string">"description"</span>],
+                        <span class="hljs-string">"HTTPMethod"</span>=&gt;<span class="hljs-variable">$verb</span>,
+                        <span class="hljs-string">"URI"</span>=&gt;<span class="hljs-variable">$route</span>,
+                        <span class="hljs-string">"RequiresOAuth"</span>=&gt;<span class="hljs-string">"N"</span>,
+                        <span class="hljs-string">"parameters"</span>=&gt;<span class="hljs-keyword">array</span>(),
+                    );
+                    <span class="hljs-variable">$ep_method</span>[<span class="hljs-string">"parameters"</span>] = array_merge(<span class="hljs-variable">$ep_method</span>[<span class="hljs-string">"parameters"</span>],<span class="hljs-variable">$method_url_parameters</span>);
+                    <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$method_parameters</span>[<span class="hljs-variable">$verb</span>]) ){
+                        <span class="hljs-variable">$ep_method</span>[<span class="hljs-string">"parameters"</span>] = array_merge(<span class="hljs-variable">$ep_method</span>[<span class="hljs-string">"parameters"</span>],transform_parameters_class_to_array(<span class="hljs-variable">$verb</span>,<span class="hljs-variable">$method_parameters</span>[<span class="hljs-variable">$verb</span>]));
+                    }
+                    <span class="hljs-variable">$endpoint</span>[<span class="hljs-string">"methods"</span>][] = <span class="hljs-variable">$ep_method</span>;
+                }
+            }
+        }
+    }
+    <span class="hljs-variable">$endpoints</span>[] = <span class="hljs-variable">$endpoint</span>;
+}
+
+
+
+
+
+<span class="hljs-variable">$example_classes</span> = get_all_example_classes(<span class="hljs-variable">$user_classes</span>);
+<span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$example_classes</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$class_name</span> ){</pre></div>
+        
+      
+        
+        <p>echo “Performing\t\t\t$class_name\n”;</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-variable">$examples</span>[<span class="hljs-variable">$class_name</span>] = transform_properties_to_example(<span class="hljs-variable">$class_name</span>);
+}</pre></div>
+        
+      
+        
+        <p>write results</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">if</span>( !is_dir(<span class="hljs-variable">$output_path</span>) )
+    mkdir(<span class="hljs-variable">$output_path</span>,<span class="hljs-number">0777</span>,<span class="hljs-keyword">true</span>);
+
+<span class="hljs-keyword">if</span>( file_exists(<span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/apiconfig.json"</span>) ){
+    <span class="hljs-variable">$api_configs</span> = json_decode(file_get_contents(<span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/apiconfig.json"</span>),<span class="hljs-keyword">true</span>);
+    <span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$api_config</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$k</span>=&gt;<span class="hljs-variable">$v</span>){
+        <span class="hljs-variable">$api_configs</span>[<span class="hljs-variable">$api_name</span>][<span class="hljs-variable">$k</span>] = <span class="hljs-variable">$v</span>;
+    }
+    file_put_contents(<span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/apiconfig.json"</span>,json_encode(<span class="hljs-variable">$api_configs</span>,JSON_PRETTY_PRINT));
+}<span class="hljs-keyword">else</span>{
+    file_put_contents(<span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/apiconfig.json"</span>,json_encode(<span class="hljs-keyword">array</span>(<span class="hljs-variable">$api_name</span>=&gt;<span class="hljs-variable">$api_config</span>),JSON_PRETTY_PRINT));
+}
+<span class="hljs-keyword">echo</span> <span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/apiconfig.json\n"</span>;
+
+
+<span class="hljs-keyword">if</span>( file_exists(<span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/$api_name.json"</span>) )
+    unlink(<span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/$api_name.json"</span>);
+file_put_contents(<span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/$api_name.json"</span>,json_encode(<span class="hljs-keyword">array</span>(<span class="hljs-string">"endpoints"</span>=&gt;<span class="hljs-variable">$endpoints</span>),JSON_PRETTY_PRINT) );
+
+<span class="hljs-keyword">echo</span> <span class="hljs-variable">$output_path</span>.<span class="hljs-string">"/$api_name.json\n"</span>;
+
+delTree(<span class="hljs-variable">$examples_path</span>);
+mkdir(<span class="hljs-variable">$examples_path</span>,<span class="hljs-number">0777</span>,<span class="hljs-keyword">true</span>);</pre></div>
+        
+      
+        
+        <p>generate the examples json files</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$examples</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$class_name</span>=&gt;<span class="hljs-variable">$example_array</span> ){
+    <span class="hljs-variable">$ref</span> = clean_path(<span class="hljs-variable">$class_name</span>);
+
+    <span class="hljs-variable">$ref_path</span> = clean_dirname(<span class="hljs-variable">$ref</span>);
+
+    <span class="hljs-variable">$ref_file</span> = basename(<span class="hljs-variable">$ref</span>);
+    <span class="hljs-variable">$ref_path</span> = clean_path(<span class="hljs-variable">$examples_path</span>.<span class="hljs-string">"/"</span>.<span class="hljs-variable">$ref_path</span>.<span class="hljs-string">"/"</span>);
+    <span class="hljs-variable">$ref_fp</span> = <span class="hljs-variable">$ref_path</span>.<span class="hljs-variable">$ref_file</span>.<span class="hljs-string">".json"</span>;</pre></div>
+        
+      
+        
+        <p>echo “$ref_fp\n”;</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-keyword">if</span>( is_dir(<span class="hljs-variable">$ref_path</span>) == <span class="hljs-keyword">false</span> ) mkdir(<span class="hljs-variable">$ref_path</span>, <span class="hljs-number">0777</span>, <span class="hljs-keyword">true</span>);
+    file_put_contents(<span class="hljs-variable">$ref_fp</span>, json_encode(<span class="hljs-variable">$example_array</span>, JSON_PRETTY_PRINT));
+}</pre></div>
+        
+      
+        
+        <p>Finally return</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;</pre></div>
+        
+      
+        
+        <h2 id="help-functions">help functions</h2>
+
+        
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">collect_userclasses</span><span class="hljs-params">(<span class="hljs-variable">$system_classes</span>)</span>{</span></pre></div>
+        
+      
+        
+        <p>collect the classes and function declared by your project</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-variable">$all_classes</span> = get_declared_classes();
+    <span class="hljs-variable">$user_classes</span> = <span class="hljs-keyword">array</span>();
+    <span class="hljs-keyword">foreach</span>( <span class="hljs-variable">$all_classes</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$class_name</span> ){
+        <span class="hljs-keyword">if</span>( in_array(<span class="hljs-variable">$class_name</span>, <span class="hljs-variable">$system_classes</span>) == <span class="hljs-keyword">false</span> ){
+            <span class="hljs-variable">$user_classes</span>[] = <span class="hljs-variable">$class_name</span>;
+        }
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-variable">$user_classes</span>;
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">wakeup_userclasses</span><span class="hljs-params">(<span class="hljs-variable">$path</span>)</span>{</span></pre></div>
+        
+      
+        
+        <p>scan files to load</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-variable">$files</span> = scanRecursive(<span class="hljs-variable">$path</span>);</pre></div>
+        
+      
+        
+        <p>load them within this context, we pray they won’t hang :/
+ideally they are only class file, or routes declaration file</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$files</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$file_path</span>=&gt;<span class="hljs-variable">$filename</span> ){
+        <span class="hljs-variable">$file_path</span> = realpath(<span class="hljs-variable">$path</span>.<span class="hljs-variable">$file_path</span>);
+        <span class="hljs-keyword">if</span>( in_array(<span class="hljs-variable">$file_path</span>, get_included_files()) == <span class="hljs-keyword">false</span> &amp;&amp; substr(<span class="hljs-variable">$file_path</span>,-<span class="hljs-number">4</span>) == <span class="hljs-string">".php"</span> ){
+            <span class="hljs-keyword">include_once</span>(<span class="hljs-variable">$file_path</span>);
+        }
+    }
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">install_autoloading</span><span class="hljs-params">(<span class="hljs-variable">$config</span>,<span class="hljs-variable">$path</span>)</span>{</span></pre></div>
+        
+      
+        
+        <p>load app bootstrap, app is responsible to initialize some variable and setup autoloader</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-variable">$use_bootstrap</span> = <span class="hljs-keyword">false</span>;
+    <span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$config</span>-&gt;app_bootstrap) ){
+        <span class="hljs-keyword">if</span>( <span class="hljs-variable">$config</span>-&gt;app_bootstrap != <span class="hljs-string">""</span> &amp;&amp;
+            file_exists(<span class="hljs-variable">$config</span>-&gt;app_bootstrap) )
+            <span class="hljs-variable">$use_bootstrap</span> = <span class="hljs-keyword">true</span>;
+    }
+
+    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$use_bootstrap</span> ){
+        <span class="hljs-keyword">include</span>(<span class="hljs-variable">$config</span>-&gt;app_bootstrap);
+    }<span class="hljs-keyword">else</span>{
+        <span class="hljs-variable">$autoload</span> = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(<span class="hljs-variable">$className</span>)</span> <span class="hljs-title">use</span><span class="hljs-params">(<span class="hljs-variable">$path</span>)</span> {</span>
+            <span class="hljs-variable">$thisClass</span> = str_replace(<span class="hljs-keyword">__NAMESPACE__</span>.<span class="hljs-string">'\\'</span>, <span class="hljs-string">''</span>, <span class="hljs-keyword">__CLASS__</span>);
+
+            <span class="hljs-variable">$baseDir</span> = <span class="hljs-variable">$path</span>;
+
+            <span class="hljs-keyword">if</span> (substr(<span class="hljs-variable">$baseDir</span>, -strlen(<span class="hljs-variable">$thisClass</span>)) === <span class="hljs-variable">$thisClass</span>) {
+                <span class="hljs-variable">$baseDir</span> = substr(<span class="hljs-variable">$baseDir</span>, <span class="hljs-number">0</span>, -strlen(<span class="hljs-variable">$thisClass</span>));
+            }
+
+            <span class="hljs-variable">$className</span> = ltrim(<span class="hljs-variable">$className</span>, <span class="hljs-string">'\\'</span>);
+            <span class="hljs-variable">$fileName</span>  = <span class="hljs-variable">$baseDir</span>;
+            <span class="hljs-variable">$namespace</span> = <span class="hljs-string">''</span>;
+            <span class="hljs-keyword">if</span> (<span class="hljs-variable">$lastNsPos</span> = strripos(<span class="hljs-variable">$className</span>, <span class="hljs-string">'\\'</span>)) {
+                <span class="hljs-variable">$namespace</span> = substr(<span class="hljs-variable">$className</span>, <span class="hljs-number">0</span>, <span class="hljs-variable">$lastNsPos</span>);
+                <span class="hljs-variable">$className</span> = substr(<span class="hljs-variable">$className</span>, <span class="hljs-variable">$lastNsPos</span> + <span class="hljs-number">1</span>);
+                <span class="hljs-variable">$fileName</span>  .= str_replace(<span class="hljs-string">'\\'</span>, DIRECTORY_SEPARATOR, <span class="hljs-variable">$namespace</span>) . DIRECTORY_SEPARATOR;
+            }
+            <span class="hljs-variable">$fileName</span> .= str_replace(<span class="hljs-string">'_'</span>, DIRECTORY_SEPARATOR, <span class="hljs-variable">$className</span>) . <span class="hljs-string">'.php'</span>;
+
+            var_dump(<span class="hljs-variable">$fileName</span>);
+            <span class="hljs-keyword">if</span> (file_exists(<span class="hljs-variable">$fileName</span>)) {
+                <span class="hljs-keyword">require</span> <span class="hljs-variable">$fileName</span>;
+            }
+        };
+        spl_autoload_register( <span class="hljs-variable">$autoload</span> );
+    }
+}</pre></div>
+        
+      
+        
+        <p>add a faveVar class to accept any call without much damage on the fake variables created</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FakeVar</span>{</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__get</span><span class="hljs-params">(<span class="hljs-variable">$p</span>)</span>{</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+    }
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__set</span><span class="hljs-params">(<span class="hljs-variable">$p</span>,<span class="hljs-variable">$v</span>)</span>{</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+    }
+    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__call</span><span class="hljs-params">(<span class="hljs-variable">$m</span>,<span class="hljs-variable">$n</span>)</span>{</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+    }
+}</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
