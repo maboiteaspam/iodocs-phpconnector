@@ -51,6 +51,7 @@ foreach( $ep_classes as $class_name ){
         $method_routes = get_class_method_routes($class_name,$method_name);
         $method_verbs = get_class_method_http_verbs($class_name,$method_name);
         $method_parameters = get_class_method_http_parameters($class_name,$method_name);
+        $method_url_parameters = get_class_method_url_parameters($class_name,$method_name);
         $method_texts = new_parse_docblock_title_desc( $class_name,$method_name );
 
         if( count($method_routes)+count($method_routes)==0){
@@ -58,6 +59,9 @@ foreach( $ep_classes as $class_name ){
         }else{
             //-
             foreach( $method_routes as $route ){
+                if( count($method_verbs) == 0 ){
+                    $method_verbs = array("GET");
+                }
                 foreach( $method_verbs as $verb ){
                     $ep_method = array(
                         "MethodName"=>$method_texts["title"],
@@ -67,8 +71,9 @@ foreach( $ep_classes as $class_name ){
                         "RequiresOAuth"=>"N",
                         "parameters"=>array(),
                     );
+                    $ep_method["parameters"] = array_merge($ep_method["parameters"],$method_url_parameters);
                     if( isset($method_parameters[$verb]) ){
-                        $ep_method["parameters"] = transform_parameters_class_to_array($method_parameters[$verb]);
+                        $ep_method["parameters"] = array_merge($ep_method["parameters"],transform_parameters_class_to_array($verb,$method_parameters[$verb]));
                     }
                     $endpoint["methods"][] = $ep_method;
                 }
@@ -108,7 +113,7 @@ echo $output_path."/apiconfig.json\n";
 
 if( file_exists($output_path."/$api_name.json") )
     unlink($output_path."/$api_name.json");
-file_put_contents($output_path."/$api_name.json",json_encode($endpoints,JSON_PRETTY_PRINT) );
+file_put_contents($output_path."/$api_name.json",json_encode(array("endpoints"=>$endpoints),JSON_PRETTY_PRINT) );
 
 echo $output_path."/$api_name.json\n";
 

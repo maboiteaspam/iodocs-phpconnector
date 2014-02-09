@@ -106,13 +106,52 @@ function get_class_method_http_parameters($class_name,$method_name){
 
     return $retour;
 }
+function get_class_method_url_parameters($class_name,$method_name){
 
-function transform_parameters_class_to_array($class_name){
+    $retour = array();
+
+    $annotations = get_annotation(array($class_name,$method_name))->getAllAnnotations('Parameter');
+    if( $annotations != false ){
+        foreach($annotations as $annotation ){
+            if( strpos("URL",$annotation->sources) !== false ){
+                $prop = array(
+                    "Description"=>"",
+                    "Name"=>"",
+                    "Required"=>false,
+                    "Default"=>null,
+                    "Pattern"=>"",
+                    "Type"=>false,
+                    "Location"=>"URL",
+                );
+                foreach( $annotation as $k=>$v){
+                    if( $k === "example" ){
+                        $prop["Default"] = $v;
+                    }else if( isset($prop[ucfirst($k)]) ){
+                        $v = $v==="true"?true:$v;
+                        $v = $v==="false"?false:$v;
+                        $prop[ucfirst($k)] = $v;
+                    }
+                }
+                if( $prop["Type"] === false ){
+                    $prop["Type"] = gettype($prop["Default"]);
+                }
+                $retour[] = $prop;
+            }else{
+                var_dump($annotation);
+                throw new \Exception("must be an array");
+            }
+        }
+    }
+
+    return $retour;
+}
+
+function transform_parameters_class_to_array($verb,$class_name){
     $retour = array();
 
     $properties = get_property_list($class_name);
     foreach( $properties as $property_name=>$prop){
-        $retour[$property_name] = new_resolve_property($class_name,$property_name,$prop["default"]);
+        $retour[$property_name] = new_resolve_property($verb,$class_name,$property_name,$prop["default"]);
     }
     return $retour;
 }
@@ -132,20 +171,23 @@ function new_parse_docblock_title_desc ($class_name,$method_name){
     );
 }
 
-function new_resolve_property($class_name,$property_name,$default_value=null){
+function new_resolve_property($verb,$class_name,$property_name,$default_value=null){
 
     $type = parse_docblock_annot(array($class_name,$property_name), "var");
     if( $type === false && $default_value !== null ){
         $type = gettype($default_value);
     }
 
+    $docblock_text = new_parse_docblock_title_desc($class_name,$property_name);
+
     $prop = array(
-        "Description"=>"",
-        "Name"=>"",
+        "Description"=>$docblock_text["title"],
+        "Name"=>$property_name,
         "Required"=>false,
         "Default"=>$default_value,
         "Pattern"=>"",
         "Type"=>$type,
+        "Location"=>$verb,
     );
 
     $annotation = get_annotation( array($class_name,$property_name) )->getAnnotation('Property');
