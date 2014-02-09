@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>serpent_addendum.php</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>serpent_addendum.php</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="cli.html">
+                    cli.php
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="iodocs-lib.html">
+                    iodocs-lib.php
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="iodocs.html">
+                    iodocs.php
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="serpent_addendum.html">
+                    serpent_addendum.php
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-preprocessor">&lt;?php</span></pre></div>
+        
+      
+        
+        <p>internally we use addendum to do the whole annotations parsing job</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">include</span>(<span class="hljs-keyword">__DIR__</span> . <span class="hljs-string">"/addendum/annotations.php"</span>);</pre></div>
+        
+      
+        
+        <p>addendum related stuff, they are the annotation you may declare</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Domain</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Service</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Route</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Method</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Response</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Parameter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$description</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$name</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$pattern</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$example</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$sources</span>;
+}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Property</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$title</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$description</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$type</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$pattern</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$required</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-variable">$default</span>;
+}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_ResponseModel</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_ExampleModel</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Items</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Serpent_Example</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ParametersModel</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Annotation</span> {</span>}</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
