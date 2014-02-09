@@ -16,6 +16,6 @@ if( isset($config->generator->tgt_paths) == false ){
     $config->generator->tgt_paths = $config->paths;
 }
 
-include("php/php.php");
+include("php/iodocs.php");
 
 
