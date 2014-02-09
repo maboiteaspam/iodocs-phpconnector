@@ -1,19 +1,14 @@
 {
-  "paths":{
-    "domains":"tests/php-app/output/domains/",
-    "examples":"tests/php-app/output/examples/",
-    "params":"tests/php-app/output/params/",
-    "models":"tests/php-app/output/models/"
+  "api_name":"php-app",
+  "api_config":{
+    "name": "Test v0.0 API",
+    "protocol": "http",
+    "baseURL": "somehost.com",
+    "publicPath": "/0.0",
+    "headers" : {}
   },
-  "generator":{
-    "tgt_paths":{
-      "domains":"tests/php-app/output/domains/",
-      "examples":"tests/php-app/output/examples/",
-      "params":"tests/php-app/output/params.json",
-      "models":"tests/php-app/output/models/"
-    },
-    "src_path":"tests/php-app/app/",
-    "app_bootstrap":"",
-    "fake_var":{}
-  }
+  "src_path":"tests/php-app/api/",
+  "app_bootstrap":"",
+  "fake_var":{},
+  "output_path":"tests/php-app/output"
 }

@@ -9,13 +9,6 @@ if( file_exists($config_file) == false ){
 }
 $config = json_decode( file_get_contents($config_file) );
 
-if( isset($config->generator) == false ){
-    die("Missing generator configuration");
-}
-if( isset($config->generator->tgt_paths) == false ){
-    $config->generator->tgt_paths = $config->paths;
-}
-
 include("php/iodocs.php");
 
 

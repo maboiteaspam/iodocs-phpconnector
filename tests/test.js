@@ -8,7 +8,7 @@ describe('phantomizer command line, webserver page assets injetion', function ()
   this.timeout(4000);
 
   var php_cli = __dirname+"/../shared/cli.php";
-  var config_file = __dirname+"/php-app2/iodocs.json";
+  var config_file = __dirname+"/php-app/iodocs.json";
 
   var php_process = null;
   before(function(done){

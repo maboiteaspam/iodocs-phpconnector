@@ -10,7 +10,7 @@ include(__DIR__ . "/iodocs-lib.php");
 
 
 // gets the src path of your php app
-$src_path       = $config->generator->src_path;
+$src_path       = $config->src_path;
 $api_name       = $config->api_name;
 $api_config     = $config->api_config;
 $output_path    = $config->output_path;
@@ -19,8 +19,8 @@ $examples_path  = $config->output_path."/examples/";
 
 
 // initiate fake variable
-if( isset($config->generator->fake_var) ){
-    foreach($config->generator->fake_var as $var){
+if( isset($config->fake_var) ){
+    foreach($config->fake_var as $var){
         $$var = new FakeVar();
     }
 }
@@ -91,6 +91,8 @@ foreach( $example_classes as $class_name ){
 
 
 // write results
+if( !is_dir($output_path) )
+    mkdir($output_path,0777,true);
 
 if( file_exists($output_path."/apiconfig.json") ){
     $api_configs = json_decode(file_get_contents($output_path."/apiconfig.json"),true);
@@ -163,14 +165,14 @@ function install_autoloading($config,$path){
 
 // load app bootstrap, app is responsible to initialize some variable and setup autoloader
     $use_bootstrap = false;
-    if( isset($config->generator->app_bootstrap) ){
-        if( $config->generator->app_bootstrap != "" &&
-            file_exists($config->generator->app_bootstrap) )
+    if( isset($config->app_bootstrap) ){
+        if( $config->app_bootstrap != "" &&
+            file_exists($config->app_bootstrap) )
             $use_bootstrap = true;
     }
 
     if( $use_bootstrap ){
-        include($config->generator->app_bootstrap);
+        include($config->app_bootstrap);
     }else{
         $autoload = function($className) use($path) {
             $thisClass = str_replace(__NAMESPACE__.'\\', '', __CLASS__);
