@@ -1,6 +1,5 @@
 <?php
-
-
+namespace Examples;
 /**
  * Class HomeResponse
  *
@@ -13,7 +12,7 @@
 class HomeResponseExample{
     public $content = 'wxcxw html wxc w chtml ';
     /**
-     * @var HomeResponseExample2
+     * @var \Examples\HomeResponseExample2
      */
     public $data;
 }

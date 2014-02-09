@@ -1,5 +1,5 @@
 <?php
-
+namespace Responses;
 /**
  * Class HomeResponse
  *

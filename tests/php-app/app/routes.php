@@ -14,8 +14,8 @@
  * @Serpent_Method('GET')
  * @Serpent_Parameter(description='Id of the stuff to read',name='id',pattern='[0-9]',example='2',sources='URL')
  *
- * @Serpent_Response('ExtendedHomeResponse')
- * @Serpent_ExampleModel({'ExtendedHomeResponse','HomeResponseExample','HomeResponseExample2'})
+ * @Serpent_Response('\Responses\ExtendedHomeResponse')
+ * @Serpent_ExampleModel({'\Examples\ExtendedHomeResponse','\Examples\HomeResponseExample','\Examples\HomeResponseExample2'})
  */
 function home(){
 
@@ -33,10 +33,10 @@ function home(){
  * @Serpent_Route('/customer/logged_in')
  * @Serpent_Method('GET')
  *
- * @Serpent_Response('ExtendedHomeResponse')
- * @Serpent_ExampleModel(description='Ok response 1',title='',ref='ExtendedHomeResponse')
- * @Serpent_ExampleModel(description='Ok response 2',title='',ref='HomeResponseExample')
- * @Serpent_ExampleModel(description='Ok response 3',title='',ref='HomeResponseExample2')
+ * @Serpent_Response('\Responses\ExtendedHomeResponse')
+ * @Serpent_ExampleModel(description='Ok response 1',title='',ref='\Examples\ExtendedHomeResponse')
+ * @Serpent_ExampleModel(description='Ok response 2',title='',ref='\Examples\HomeResponseExample')
+ * @Serpent_ExampleModel(description='Ok response 3',title='',ref='\Examples\HomeResponseExample2')
  */
 function logged_in(){
 
@@ -51,10 +51,10 @@ function logged_in(){
  * @Serpent_Route('/customer/logout')
  * @Serpent_Method('GET')
  *
- * @Serpent_Response('ExtendedHomeResponse')
- * @Serpent_ExampleModel({description='Ok response 1',title='',ref='ExtendedHomeResponse'})
- * @Serpent_ExampleModel({description='Ok response 2',title='',ref='HomeResponseExample'})
- * @Serpent_ExampleModel({description='Ok response 3',title='',ref='HomeResponseExample2'})
+ * @Serpent_Response('\Responses\ExtendedHomeResponse')
+ * @Serpent_ExampleModel({description='Ok response 1',title='',ref='\Examples\ExtendedHomeResponse'})
+ * @Serpent_ExampleModel({description='Ok response 2',title='',ref='\Examples\HomeResponseExample'})
+ * @Serpent_ExampleModel({description='Ok response 3',title='',ref='\Examples\HomeResponseExample2'})
  */
 function logout(){
 
@@ -69,10 +69,10 @@ function logout(){
  * @Serpent_Route('/customer/login')
  * @Serpent_Method('GET')
  *
- * @Serpent_Response('ExtendedHomeResponse')
- * @Serpent_ExampleModel({description='Ok response 1',title='',ref='ExtendedHomeResponse'})
- * @Serpent_ExampleModel({description='Ok response 2',title='',ref='HomeResponseExample'})
- * @Serpent_ExampleModel({description='Ok response 3',title='',ref='HomeResponseExample2'})
+ * @Serpent_Response('\Responses\ExtendedHomeResponse')
+ * @Serpent_ExampleModel({description='Ok response 1',title='',ref='\Examples\ExtendedHomeResponse'})
+ * @Serpent_ExampleModel({description='Ok response 2',title='',ref='\Examples\HomeResponseExample'})
+ * @Serpent_ExampleModel({description='Ok response 3',title='',ref='\Examples\HomeResponseExample2'})
  */
 function login(){
 
@@ -93,10 +93,10 @@ function login(){
  * @Serpent_Parameter(  name='limit', description='Offset limit of the list such as (page-length)', pattern='[0-9]+(-[0-9]+)?', example='2', sources='URL')
  * @Serpent_Method('GET')
  *
- * @Serpent_Response('ExtendedHomeResponse')
- * @Serpent_ExampleModel({description='Ok response 1',title='',ref='ExtendedHomeResponse'})
- * @Serpent_ExampleModel({description='Ok response 2',title='',ref='HomeResponseExample'})
- * @Serpent_ExampleModel({description='Ok response 3',title='',ref='HomeResponseExample2'})
+ * @Serpent_Response('\Responses\ExtendedHomeResponse')
+ * @Serpent_ExampleModel({description='Ok response 1',title='',ref='\Examples\ExtendedHomeResponse'})
+ * @Serpent_ExampleModel({description='Ok response 2',title='',ref='\Examples\HomeResponseExample'})
+ * @Serpent_ExampleModel({description='Ok response 3',title='',ref='\Examples\HomeResponseExample2'})
  *
  */
 function addresses(){
@@ -124,7 +124,7 @@ function addresses(){
  * @Serpent_Method('GET POST')
  *
  * @Serpent_Response('\Customer\CustomerResponse')
- * @Serpent_Response('ExtendedHomeResponse')
+ * @Serpent_Response('\Responses\ExtendedHomeResponse')
  * @Serpent_ExampleModel({description='Ok response',ref='\Customer\CustomerResponse'})
  * @Serpent_ExampleModel({description='Ok response',ref='ExtendedHomeResponse'})
  */

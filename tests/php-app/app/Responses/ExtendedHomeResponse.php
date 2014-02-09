@@ -1,4 +1,5 @@
 <?php
+namespace Responses;
 /**
  * Class ExtendedHomeResponse
  *
