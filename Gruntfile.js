@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     docco: {
       debug: {
         src: [
-          'shared/tests/test.js',
+          'tests/test.js',
           'shared/cli.php',
           'shared/php/iodocs.php',
           'shared/php/iodocs-lib.php',
