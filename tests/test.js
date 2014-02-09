@@ -3,7 +3,7 @@
 var should = require('should');
 var log = require('npmlog');
 
-describe('phantomizer command line, webserver page assets injetion', function () {
+describe('iodocs-phpconnector command line, generates JSON for iodocs', function () {
 
   this.timeout(4000);
 
@@ -33,8 +33,9 @@ describe('phantomizer command line, webserver page assets injetion', function ()
   });
 
 
-  it('should inject scripts and css in the right order', function(done) {
-      done();
+  it('should generate fiels with correct format', function(done) {
+    /* todo */
+    done();
   });
 });
 
