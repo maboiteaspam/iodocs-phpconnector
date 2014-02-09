@@ -13,3 +13,7 @@ results
 
 npm-debug.log
 node_modules
+
+tests/php-app2
+tests/php-app2/output
+tests/php-app/output
