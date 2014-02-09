@@ -1,19 +1,19 @@
 {
   "paths":{
-    "domains":"tests/output/domains/",
-    "examples":"tests/output/examples/",
-    "params":"tests/output/params/",
-    "models":"tests/output/models/"
+    "domains":"tests/php-app/output/domains/",
+    "examples":"tests/php-app/output/examples/",
+    "params":"tests/php-app/output/params/",
+    "models":"tests/php-app/output/models/"
   },
   "generator":{
     "tgt_paths":{
-      "domains":"tests/output/domains/",
-      "examples":"tests/output/examples/",
-      "params":"tests/output/params/",
-      "models":"tests/output/models/"
+      "domains":"tests/php-app/output/domains/",
+      "examples":"tests/php-app/output/examples/",
+      "params":"tests/php-app/output/params.json",
+      "models":"tests/php-app/output/models/"
     },
-    "src_path":"tests/php-app/",
-    "app_bootstrap":"tests/iodocs-bootstrap.php",
+    "src_path":"tests/php-app/app/",
+    "app_bootstrap":"",
     "fake_var":{}
   }
 }
