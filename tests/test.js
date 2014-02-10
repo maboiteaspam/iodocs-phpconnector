@@ -33,7 +33,7 @@ describe('iodocs-phpconnector command line, generates JSON for iodocs', function
   });
 
 
-  it('should generate fiels with correct format', function(done) {
+  it('should generate files with correct format', function(done) {
     /* todo */
     done();
   });
